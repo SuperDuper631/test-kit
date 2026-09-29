@@ -54,49 +54,39 @@ A customer wants to know whether the items in their basket can be collected from
 
 ## What's already there
 
-| Layer      | Class                         | Notes                                                                                             |
-| ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------- |
-| Entity     | `InventoryLocationEntity`     | Maps the `inventory_location` table; contains `availableFrom` and `availableUntil` as `LocalDate` |
-| Repository | `InventoryLocationRepository` | Currently exposes `findBySkuAndLocationId`, which returns only one matching record                |
-| Controller | `CollectionController`        | Contains a placeholder `GET /collection/hello`; replace or extend it                              |
-| Service    | `CollectionService`           | Empty; implement the required business logic here                                                 |
+| Layer      | Class                         | What's provided                                                                    |
+| ---------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| Model      | `InventoryLocationEntity`     | Holds the SKU, location ID, and availability dates as `LocalDate` values.          |
+| DTOs       | Collection check model classes | Request and response types are provided in the `model` package.                    |
+| Repository | `InventoryLocationRepository` | An in-memory `Map<String, List<InventoryLocationEntity>>` and seed fixtures exist. |
+| Controller | `CollectionController`        | The `POST /collection/check` route is declared; its handler is incomplete.         |
+| Service    | `CollectionService`           | The `check` method is provided as a stub.                                          |
 
 ## Your task
 
-Implement the endpoint and service logic so that the API follows the business rules above.
+Complete the TODOs so that the endpoint follows the business rules above. Use the in-memory map in `InventoryLocationRepository`; do not add a database or ORM.
 
 Consider:
 
-* How the repository should behave when multiple availability records exist.
-* How to handle items for which no matching database records are found.
-* How to convert the requested timestamp into the date used by the business rules.
-* How the response DTOs should be structured.
-* Keeping database access in the repository layer and business decisions in the service layer.
+* How to store and return multiple availability records for the same SKU and location.
+* How to handle items for which no matching records are found.
+* How to evaluate the requested timestamp using its calendar date.
+* How to preserve the request order in the response.
+* Keeping map access in the repository and business decisions in the service.
 
-You may modify existing repository methods or add new ones where necessary.
+You may complete or modify the existing repository methods as needed. The request and response DTOs are already provided.
 
-INSERT INTO inventory_location (
-    sku,
-    location_id,
-    available_from,
-    available_until
-) VALUES
--- 1. Fully available for the requested date
-('SKU-1001', 'LOC-42', '2026-08-01', '2026-08-31'),
+## Seed fixtures
 
--- 2. Multiple availability windows for the same SKU/location
-('SKU-1002', 'LOC-10', '2026-08-01', '2026-08-05'),
-('SKU-1002', 'LOC-10', '2026-08-20', '2026-08-31'),
+The repository's `seedData()` method loads these records into the in-memory map. Rows with the same SKU and location represent separate availability periods.
 
--- 3. Window exists, but requested date is outside it
-('SKU-1003', 'LOC-20', '2026-07-01', '2026-07-31'),
-
--- 4. Requested date is exactly the start date
-('SKU-1004', 'LOC-30', '2026-08-15', '2026-08-20'),
-
--- 5. Requested date is exactly the end date
-('SKU-1005', 'LOC-40', '2026-08-01', '2026-08-15'),
-
--- 6. Multiple windows, one matches
-('SKU-1006', 'LOC-50', '2026-07-01', '2026-07-10'),
-('SKU-1006', 'LOC-50', '2026-08-10', '2026-08-25');
+| SKU        | Location ID | Available from | Available until |
+| ---------- | ----------- | -------------- | --------------- |
+| `SKU-1001` | `LOC-42`    | 2026-08-01     | 2026-08-31      |
+| `SKU-1002` | `LOC-10`    | 2026-08-01     | 2026-08-05      |
+| `SKU-1002` | `LOC-10`    | 2026-08-20     | 2026-08-31      |
+| `SKU-1003` | `LOC-20`    | 2026-07-01     | 2026-07-31      |
+| `SKU-1004` | `LOC-30`    | 2026-08-15     | 2026-08-20      |
+| `SKU-1005` | `LOC-40`    | 2026-08-01     | 2026-08-15      |
+| `SKU-1006` | `LOC-50`    | 2026-07-01     | 2026-07-10      |
+| `SKU-1006` | `LOC-50`    | 2026-08-10     | 2026-08-25      |

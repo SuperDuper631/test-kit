@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Repository
 public class InventoryLocationRepository {
@@ -18,12 +17,12 @@ public class InventoryLocationRepository {
 	}
 
     public void add(InventoryLocationEntity record) {
-		records.computeIfAbsent(key(record.sku(), record.locationId()), ignored -> new CopyOnWriteArrayList<>())
-				.add(record);
+    //complete the code 
 	}
 
 	public List<InventoryLocationEntity> findBySkuAndLocationId(String sku, String locationId) {
-		return List.copyOf(records.getOrDefault(key(sku, locationId), List.of()));
+		    //complete the code 
+            return null;
 	}
 
 	private String key(String sku, String locationId) {
